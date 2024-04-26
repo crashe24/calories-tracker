@@ -1,18 +1,33 @@
 
 import * as React from 'react'
+import {v4 as uuidV4} from 'uuid'
 import { useState } from 'react'
 import { categories } from '../../data/category'
+import { ActivityActions, ActivityState } from '../../reducers/activity-reducer'
 import { TActivity } from '../../types/index'
 
+type FormComponentProps = {
+    dispatch: React.Dispatch<ActivityActions>,
+    state: ActivityState
+}
 
+const initialState: TActivity = {
+    id: uuidV4(),
+    category:1,
+    name:'',
+    calories: 0
+}
+const FormComponent = ({dispatch, state}: FormComponentProps) => {
 
-const FormComponent = () => {
+  const [activity, setActivity] = useState<TActivity>(initialState)
 
-  const [activity, setActivity] = useState<TActivity>({
-      category:1,
-      name:'',
-      calories: 0
-  })
+  React.useEffect(() => {
+    if(state.activeId) {
+        const selectedActivity = state.activities.filter( stateRef => stateRef.id ===state.activeId)[0]
+        setActivity(selectedActivity)
+    }
+  }, [state.activeId])
+  
   
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement> ) => {
      
@@ -27,13 +42,19 @@ const FormComponent = () => {
 
   const isValidActivity = () => {
       const {name, calories} = activity
-      console.log('first', name.trim() !== '' && calories > 0)
       return name.trim() !== '' && calories > 0
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault()
-            
+            dispatch({
+                type:'save-activity',
+                payload: {newActivity: activity}
+            })
+            setActivity({
+                ...initialState,
+                id: uuidV4()
+            })
   }
 
   return (

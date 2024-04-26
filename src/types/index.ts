@@ -4,7 +4,9 @@ export type Category = {
 }
 
 export type TActivity = {
+    id:string,
     category: number;
     name: string;
     calories: number;
 }
+

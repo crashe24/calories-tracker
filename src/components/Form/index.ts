@@ -1,2 +1,0 @@
-export FormComponent from "./FormComponent";
-
